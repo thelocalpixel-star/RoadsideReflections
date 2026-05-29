@@ -1488,9 +1488,8 @@ document.addEventListener('DOMContentLoaded', function() {
     border-radius: 4px;
     overflow: hidden;
   }
-  @media (max-width: 768px) {
-    .ba-slider-grid { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 768px) { .ba-slider-grid { grid-template-columns: 1fr; } }
+
   .ba-slider-wrap {
     position: relative;
     overflow: hidden;
@@ -1503,6 +1502,8 @@ document.addEventListener('DOMContentLoaded', function() {
     aspect-ratio: 3/4;
     grid-row: span 2;
   }
+
+  /* AFTER image — full size, sits at the back */
   .ba-after-img {
     position: absolute;
     inset: 0;
@@ -1510,43 +1511,51 @@ document.addEventListener('DOMContentLoaded', function() {
     height: 100%;
     object-fit: cover;
     pointer-events: none;
+    display: block;
   }
-  .ba-before-panel {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    width: 50%;
-  }
+
+  /* BEFORE overlay — full size, clipped from right by clip-path */
   .ba-before-img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Desaturated + dark overlay to simulate "before" on the same vehicle */
-    filter: saturate(0.15) brightness(0.55) contrast(1.1);
-  }
-  /* dirty overlay */
-  .ba-before-panel::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 30% 60%, rgba(60,40,10,0.45) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 40% at 70% 30%, rgba(80,60,20,0.3) 0%, transparent 60%),
-      linear-gradient(135deg, rgba(40,25,5,0.35) 0%, rgba(0,0,0,0.15) 100%);
     pointer-events: none;
+    display: block;
+    /* Start at 50% reveal */
+    clip-path: inset(0 50% 0 0);
+    /* "before" look: desaturated, dark, dirty */
+    filter: saturate(0.12) brightness(0.5) contrast(1.15) sepia(0.3);
     z-index: 2;
   }
+  /* dirty grime overlay on before side */
+  .ba-before-img::after { display: none; } /* can't use ::after on img */
+
+  /* Grime overlay — sits on top of before img, also clipped */
+  .ba-grime {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    clip-path: inset(0 50% 0 0);
+    background:
+      radial-gradient(ellipse 70% 50% at 25% 65%, rgba(60,38,8,0.5) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 35% at 60% 25%, rgba(50,32,6,0.35) 0%, transparent 55%),
+      linear-gradient(135deg, rgba(35,22,4,0.4) 0%, rgba(0,0,0,0.1) 100%);
+  }
+
+  /* Divider line */
   .ba-handle {
     position: absolute;
     top: 0; bottom: 0;
     left: 50%;
     width: 3px;
-    background: #fff;
+    background: rgba(255,255,255,0.95);
     transform: translateX(-50%);
     z-index: 10;
     cursor: col-resize;
+    box-shadow: 0 0 12px rgba(0,0,0,0.6);
   }
   .ba-handle-circle {
     position: absolute;
@@ -1556,18 +1565,17 @@ document.addEventListener('DOMContentLoaded', function() {
     background: #fff;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.5);
-    font-size: 15px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.6);
+    font-size: 14px;
     color: #080A0E;
-    font-weight: 700;
-    letter-spacing: -1px;
+    font-weight: 900;
     white-space: nowrap;
   }
   .ba-label-before {
     position: absolute;
     top: 14px; left: 14px;
-    background: rgba(0,0,0,0.7);
-    color: #aaa;
+    background: rgba(0,0,0,0.75);
+    color: #bbb;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 2px;
@@ -1592,9 +1600,9 @@ document.addEventListener('DOMContentLoaded', function() {
   .ba-info-overlay {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    background: linear-gradient(0deg, rgba(8,10,14,0.92) 0%, transparent 100%);
+    background: linear-gradient(0deg, rgba(8,10,14,0.95) 0%, transparent 100%);
     padding: 22px 20px 18px;
-    z-index: 12;
+    z-index: 14;
     pointer-events: none;
   }
   .ba-info-tag {
@@ -1615,12 +1623,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <div class="ba-slider-grid reveal reveal-delay-2">
 
-  <!-- Slider 1: Corvette (tall, spans 2 rows) -->
+  <!-- Slider 1: Corvette (tall) -->
   <div class="ba-slider-wrap tall" data-slider>
-    <img class="ba-after-img" src="__CORVETTE_SRC__" alt="After - Corvette C8 detail">
-    <div class="ba-before-panel" data-before>
-      <img class="ba-before-img" src="__CORVETTE_SRC__" alt="Before - Corvette">
-    </div>
+    <img class="ba-after-img" src="__CORVETTE_SRC__" alt="After - Corvette C8">
+    <img class="ba-before-img" src="__CORVETTE_SRC__" alt="Before - Corvette C8" data-before-img>
+    <div class="ba-grime" data-grime></div>
     <div class="ba-handle" data-handle>
       <div class="ba-handle-circle">◀▶</div>
     </div>
@@ -1636,9 +1643,8 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- Slider 2: QX80 Interior -->
   <div class="ba-slider-wrap" data-slider>
     <img class="ba-after-img" src="__INTERIOR_SRC__" alt="After - QX80 Interior">
-    <div class="ba-before-panel" data-before>
-      <img class="ba-before-img" src="__INTERIOR_SRC__" alt="Before - QX80 Interior">
-    </div>
+    <img class="ba-before-img" src="__INTERIOR_SRC__" alt="Before - QX80 Interior" data-before-img>
+    <div class="ba-grime" data-grime></div>
     <div class="ba-handle" data-handle>
       <div class="ba-handle-circle">◀▶</div>
     </div>
@@ -1654,9 +1660,8 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- Slider 3: CR-V -->
   <div class="ba-slider-wrap" data-slider>
     <img class="ba-after-img" src="__CRV_SRC__" alt="After - Honda CR-V">
-    <div class="ba-before-panel" data-before>
-      <img class="ba-before-img" src="__CRV_SRC__" alt="Before - Honda CR-V">
-    </div>
+    <img class="ba-before-img" src="__CRV_SRC__" alt="Before - Honda CR-V" data-before-img>
+    <div class="ba-grime" data-grime></div>
     <div class="ba-handle" data-handle>
       <div class="ba-handle-circle">◀▶</div>
     </div>
@@ -1673,32 +1678,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 // ── BEFORE/AFTER SLIDERS ──
-document.querySelectorAll('[data-slider]').forEach(function(wrap) {
-  var before = wrap.querySelector('[data-before]');
-  var handle = wrap.querySelector('[data-handle]');
-  var isDragging = false;
+// Uses clip-path on the before image so it never scales — only the reveal area changes.
+(function() {
+  function initSliders() {
+    document.querySelectorAll('[data-slider]').forEach(function(wrap) {
+      var beforeImg = wrap.querySelector('[data-before-img]');
+      var grime     = wrap.querySelector('[data-grime]');
+      var handle    = wrap.querySelector('[data-handle]');
+      var pct       = 50; // start at 50%
+      var dragging  = false;
 
-  function setPos(x) {
-    var rect = wrap.getBoundingClientRect();
-    var pct = Math.min(Math.max((x - rect.left) / rect.width, 0.02), 0.98);
-    before.style.width = (pct * 100) + '%';
-    handle.style.left = (pct * 100) + '%';
+      function setClip(p) {
+        pct = Math.min(Math.max(p, 1), 99);
+        var rightInset = (100 - pct) + '%';
+        beforeImg.style.clipPath = 'inset(0 ' + rightInset + ' 0 0)';
+        grime.style.clipPath     = 'inset(0 ' + rightInset + ' 0 0)';
+        handle.style.left        = pct + '%';
+      }
+
+      function clientPct(clientX) {
+        var rect = wrap.getBoundingClientRect();
+        return ((clientX - rect.left) / rect.width) * 100;
+      }
+
+      // Mouse events
+      handle.addEventListener('mousedown', function(e) {
+        dragging = true;
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      wrap.addEventListener('mousedown', function(e) {
+        dragging = true;
+        setClip(clientPct(e.clientX));
+        e.preventDefault();
+      });
+      window.addEventListener('mousemove', function(e) {
+        if (dragging) setClip(clientPct(e.clientX));
+      });
+      window.addEventListener('mouseup', function() { dragging = false; });
+
+      // Touch events
+      wrap.addEventListener('touchstart', function(e) {
+        dragging = true;
+        setClip(clientPct(e.touches[0].clientX));
+      }, {passive: true});
+      window.addEventListener('touchmove', function(e) {
+        if (dragging) setClip(clientPct(e.touches[0].clientX));
+      }, {passive: true});
+      window.addEventListener('touchend', function() { dragging = false; });
+
+      // Init
+      setClip(50);
+    });
   }
 
-  // Mouse
-  handle.addEventListener('mousedown', function(e) { isDragging = true; e.preventDefault(); });
-  wrap.addEventListener('mousedown', function(e) { isDragging = true; setPos(e.clientX); e.preventDefault(); });
-  window.addEventListener('mousemove', function(e) { if (isDragging) setPos(e.clientX); });
-  window.addEventListener('mouseup', function() { isDragging = false; });
-
-  // Touch
-  handle.addEventListener('touchstart', function(e) { isDragging = true; }, {passive:true});
-  wrap.addEventListener('touchstart', function(e) { isDragging = true; setPos(e.touches[0].clientX); }, {passive:true});
-  window.addEventListener('touchmove', function(e) { if (isDragging) setPos(e.touches[0].clientX); }, {passive:true});
-  window.addEventListener('touchend', function() { isDragging = false; });
-});
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSliders);
+  } else {
+    initSliders();
+  }
+})();
 </script>
-
 </section>
 
 <!-- ── PHOTO GALLERY
