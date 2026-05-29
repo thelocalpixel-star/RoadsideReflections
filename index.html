@@ -472,9 +472,11 @@
   /* ── SERVICES ── */
   #services { background: var(--black); }
   .services-header {
-    display: flex; justify-content: space-between; align-items: flex-end;
+    display: flex; justify-content: space-between; align-items: flex-start;
     margin-bottom: 64px; flex-wrap: wrap; gap: 24px;
   }
+  .services-header > div { flex: 0 0 auto; }
+  .services-header > .section-sub { flex: 0 1 480px; align-self: flex-end; margin-bottom: 4px; }
   .services-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1360,16 +1362,50 @@
     /* ── HERO ── */
     .hero-headline { font-size: clamp(44px, 12vw, 64px); }
     .hero-sub { font-size: 15px; max-width: 100%; }
-    .hero-stats { position: static; margin-top: 40px; justify-content: flex-start; gap: 28px; flex-wrap: wrap; }
-    .hero-stat-num { font-size: 32px; }
-    .hero-scroll { display: none; }
+    /* Hero — mobile full reflow */
+    #hero {
+      padding: 100px 4vw 48px;
+      min-height: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .hero-content {
+      padding-top: 0;
+      max-width: 100%;
+      position: relative;
+      z-index: 2;
+      width: 100%;
+    }
     .hero-car-silhouette { display: none; }
-    .hero-content { padding-top: 0; max-width: 100%; }
-    #hero { padding: 100px 4vw 60px; min-height: auto; }
-    
-    .hero-actions { flex-direction: column; align-items: center; width: 100%; }
+    .hero-scroll { display: none; }
+    /* Stats flow below content, no longer absolute */
+    .hero-stats {
+      position: static;
+      margin-top: 36px;
+      justify-content: flex-start;
+      gap: 24px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .hero-stat { text-align: left; }
+    .hero-stat-num { font-size: 32px; }
+    /* Buttons: centered, full-width capped */
+    .hero-actions {
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 12px;
+      margin-top: 28px;
+    }
     .hero-actions .btn-primary,
-    .hero-actions .btn-secondary { text-align: center; justify-content: center; padding: 16px 24px; width: 100%; max-width: 320px; }
+    .hero-actions .btn-secondary {
+      text-align: center;
+      justify-content: center;
+      padding: 16px 24px;
+      width: 100%;
+      max-width: 340px;
+    }
 
     /* ── TRUST BAR ── */
     .trust-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
@@ -1384,7 +1420,8 @@
 
     /* ── SERVICES ── */
     .services-grid { grid-template-columns: 1fr; }
-    .services-header { flex-direction: column; gap: 16px; }
+    .services-header { flex-direction: column; gap: 8px; align-items: flex-start; }
+    .services-header > .section-sub { flex: unset; max-width: 100%; align-self: flex-start; }
 
     /* ── COUNTERS ── */
     .counters-grid { grid-template-columns: repeat(2, 1fr); }
